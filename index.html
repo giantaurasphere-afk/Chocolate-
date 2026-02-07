@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Chocolate Day 🍫</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- RESET & VARIABLES --- */
+        :root {
+            --choco-dark: #3e2723;
+            --choco-milk: #795548;
+            --choco-light: #d7ccc8;
+            --pink-bg: #f8bbd0;
+            --pink-deep: #ec407a;
+            --text-color: #333;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--choco-dark);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        /* --- SCREEN TRANSITIONS --- */
+        .screen {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.8s ease-in-out;
+        }
+
+        .hidden {
+            opacity: 0;
+            transform: translateY(-20px) scale(0.95);
+            pointer-events: none;
+            z-index: -10;
+        }
+
+        /* --- LOCK SCREEN --- */
+        #lockScreen {
+            background: linear-gradient(135deg, #4e342e, #3e2723);
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            width: 90%;
+            max-width: 350px;
+        }
+
+        .pass-input {
+            width: 100%;
+            padding: 12px;
+            margin: 20px 0;
+            border-radius: 50px;
+            border: 2px solid #8d6e63;
+            background: rgba(255,255,255,0.9);
+            text-align: center;
+            font-size: 1rem;
+            outline: none;
+            color: var(--choco-dark);
+        }
+
+        .btn {
+            background: #d4a017; /* Gold foil color */
+            color: #3e2723;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 700;
+            box-shadow: 0 5px 15px rgba(212, 160, 23, 0.4);
+            transition: transform 0.2s;
+        }
+
+        .btn:active { transform: scale(0.95); }
+
+        /* --- PAGE 1: PINK & CHOCOLATE --- */
+        #page1 {
+            background: radial-gradient(circle, #fce4ec, #f8bbd0);
+            color: var(--choco-dark);
+        }
+
+        /* Falling Hearts Container */
+        #rainContainer {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .falling-heart {
+            position: absolute;
+            top: -20px;
+            font-size: 1.5rem;
+            animation: fall linear forwards;
+            opacity: 0.8;
+        }
+
+        .big-choco {
+            font-size: 8rem;
+            z-index: 2;
+            filter: drop-shadow(0 10px 20px rgba(62, 39, 35, 0.3));
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            margin: 30px 20px;
+            font-weight: 600;
+            text-align: center;
+            z-index: 2;
+        }
+
+        .option-btn {
+            background: var(--choco-dark);
+            color: white;
+            padding: 12px 30px;
+            margin: 10px;
+            border-radius: 50px;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            z-index: 2;
+            box-shadow: 0 5px 15px rgba(62, 39, 35, 0.4);
+            animation: glow 2s infinite alternate;
+        }
+
+        /* --- PAGE 2: REVEAL --- */
+        #page2 {
+            background: #4e342e; /* Dark Chocolate BG */
+        }
+
+        .circle-frame {
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            border: 6px solid #d4a017; /* Gold Border */
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(212, 160, 23, 0.3);
+            margin-bottom: 30px;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .circle-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Ensures the whole character is seen */
+        }
+
+        .gift-emoji {
+            font-size: 4rem;
+            cursor: pointer;
+            transition: transform 0.3s;
+            animation: shake 2s infinite;
+        }
+
+        .gift-emoji:active { transform: scale(0.9); }
+
+        .tap-text {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            opacity: 0.8;
+            color: #d7ccc8;
+        }
+
+        /* --- MODAL POPUP --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
+            z-index: 100;
+        }
+
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+        .message-card {
+            background: white;
+            width: 85%;
+            max-width: 400px;
+            padding: 30px;
+            border-radius: 20px;
+            color: var(--choco-dark);
+            text-align: left;
+            position: relative;
+            transform: scale(0.8);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-top: 10px solid var(--choco-milk);
+        }
+
+        .modal-overlay.active .message-card { transform: scale(1); }
+
+        .message-content {
+            font-family: 'Poppins', sans-serif; /* Normal font as requested */
+            font-size: 1.1rem;
+            line-height: 1.6;
+            font-weight: 400;
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes fall { to { transform: translateY(110vh); } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        @keyframes glow { from { box-shadow: 0 0 5px var(--choco-dark); } to { box-shadow: 0 0 20px #8d6e63; } }
+        @keyframes shake { 
+            0% { transform: rotate(0deg); } 
+            25% { transform: rotate(5deg); } 
+            50% { transform: rotate(0deg); } 
+            75% { transform: rotate(-5deg); } 
+            100% { transform: rotate(0deg); } 
+        }
+        @keyframes errorShake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-10px);} 75% {transform: translateX(10px);} }
+        .shake-input { animation: errorShake 0.3s ease-in-out; border-color: red !important; }
+
+    </style>
+</head>
+<body>
+
+    <audio id="bgMusic" loop>
+        <source src="song.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="lockScreen" class="screen">
+        <div class="glass-panel">
+            <div style="font-size: 3rem; margin-bottom: 10px;">🔒</div>
+            <h2 style="color: white; margin-bottom: 10px;">Choco Login</h2>
+            <p style="font-size: 0.8rem; opacity: 0.8; color: #fff;">Enter the secret code</p>
+            <input type="text" id="passInput" class="pass-input" placeholder="Password...">
+            <button class="btn" onclick="checkPass()">Unwrap 🍫</button>
+        </div>
+    </div>
+
+    <div id="page1" class="screen hidden">
+        <div id="rainContainer"></div>
+        <div class="big-choco">🍫</div>
+        <h2 class="question-text">Apko pata hai yeh kaunsa chocolate hai ?🤔</h2>
+        <div style="display: flex; gap: 10px;">
+            <button class="option-btn" onclick="goToPage2()">ekdam 🫠</button>
+            <button class="option-btn" onclick="goToPage2()">Hanji 🤭</button>
+        </div>
+    </div>
+
+    <div id="page2" class="screen hidden">
+        <div class="circle-frame">
+            <img src="choco.jpg" alt="Chocolate Character" onerror="this.parentElement.innerHTML='<span style=\'color:black\'>Image missing!<br>Name it choco.jpg</span>'">
+        </div>
+        
+        <div style="text-align: center; cursor: pointer;" onclick="revealMessage()">
+            <div class="gift-emoji">🎁</div>
+            <p class="tap-text">Tap to reveal</p>
+        </div>
+    </div>
+
+    <div id="modal" class="modal-overlay">
+        <div class="message-card">
+            <p id="typewriterText" class="message-content"></p>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIG ---
+        const correctPass = "dairymilkoreo❤️";
+        const message = "Aj hai chocolate wala day 🤭 to main soch rha tha ki apko ek dairy milk Oreo bhijwa du 🤔. Jk ik it's your favourite chocolate and the next time we meet physically I will surely buy you a dairy milk Oreo ❤️, I love you cutu 🧿💗";
+
+        // --- PASSWORD SYSTEM ---
+        function checkPass() {
+            const input = document.getElementById('passInput');
+            if(input.value.trim() === correctPass) {
+                document.getElementById('lockScreen').classList.add('hidden');
+                document.getElementById('page1').classList.remove('hidden');
+                startRain();
+            } else {
+                input.classList.add('shake-input');
+                setTimeout(() => input.classList.remove('shake-input'), 300);
+            }
+        }
+
+        // --- PAGE 1 LOGIC ---
+        function startRain() {
+            const container = document.getElementById('rainContainer');
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.innerHTML = '❤️'; // Tiny love emojis
+                heart.classList.add('falling-heart');
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = Math.random() * 2 + 3 + 's';
+                heart.style.fontSize = Math.random() * 1 + 0.5 + 'rem';
+                container.appendChild(heart);
+
+                // Cleanup
+                setTimeout(() => heart.remove(), 5000);
+            }, 200);
+        }
+
+        function goToPage2() {
+            // Play music on first interaction if blocked by browser earlier
+            const audio = document.getElementById('bgMusic');
+            audio.volume = 0.5;
+            audio.play().catch(e => console.log("Audio requires interaction"));
+
+            document.getElementById('page1').classList.add('hidden');
+            document.getElementById('page2').classList.remove('hidden');
+        }
+
+        // --- REVEAL MESSAGE ---
+        function revealMessage() {
+            const modal = document.getElementById('modal');
+            modal.classList.add('active');
+            
+            // Typewriter Effect
+            const target = document.getElementById('typewriterText');
+            target.innerHTML = "";
+            let i = 0;
+            
+            function type() {
+                if (i < message.length) {
+                    target.innerHTML += message.charAt(i);
+                    i++;
+                    setTimeout(type, 40); // Typing speed
+                }
+            }
+            setTimeout(type, 500); // Small delay before typing starts
+        }
+    </script>
+</body>
+</html>
